@@ -7,11 +7,11 @@
 
 #include <vector>
 
-#include "packager/media/base/decrypt_config.h"
-#include "packager/media/base/fourccs.h"
-#include "packager/media/codecs/aac_audio_specific_config.h"
-#include "packager/media/codecs/es_descriptor.h"
-#include "packager/media/formats/mp4/box.h"
+#include <packager/media/base/decrypt_config.h>
+#include <packager/media/base/fourccs.h>
+#include <packager/media/codecs/aac_audio_specific_config.h>
+#include <packager/media/codecs/es_descriptor.h>
+#include <packager/media/formats/mp4/box.h>
 
 namespace shaka {
 namespace media {
@@ -117,8 +117,8 @@ struct SampleEncryption : FullBox {
   ///             entries.
   /// @return true on success, false otherwise.
   bool ParseFromSampleEncryptionData(
-      uint8_t iv_size,
-      std::vector<SampleEncryptionEntry>* sample_encryption_entries) const;
+      uint8_t l_iv_size,
+      std::vector<SampleEncryptionEntry>* l_sample_encryption_entries) const;
 
   /// We may not know @a iv_size before reading this box. In this case, we will
   /// store sample encryption data for parsing later when @a iv_size is known.
@@ -276,6 +276,7 @@ struct ColorParameters : Box {
   uint16_t transfer_characteristics = 1;
   uint16_t matrix_coefficients = 1;
   uint8_t video_full_range_flag = 0;
+  std::vector<uint8_t> raw_box;
 };
 
 struct PixelAspectRatio : Box {
@@ -293,7 +294,7 @@ struct VideoSampleEntry : Box {
     return format == FOURCC_encv ? sinf.format.format : format;
   }
   // Returns the box type of codec configuration box from video format.
-  FourCC GetCodecConfigurationBoxType(FourCC format) const;
+  FourCC GetCodecConfigurationBoxType(FourCC l_format) const;
 
   // Convert |extra_codec_configs| to vector.
   std::vector<uint8_t> ExtraCodecConfigsAsVector() const;
@@ -735,6 +736,7 @@ struct TrackFragmentHeader : FullBox {
   };
 
   enum SampleFlagsMasks {
+    kUnset = 0x00000000,
     kReservedMask = 0xFC000000,
     kSampleDependsOnMask = 0x03000000,
     kSampleIsDependedOnMask = 0x00C00000,
