@@ -59,8 +59,6 @@ namespace {
 
 const char kMediaInfoSuffix[] = ".media_info";
 
-const int64_t kDefaultTextZeroBiasMs = 10 * 60 * 1000;  // 10 minutes
-
 MuxerListenerFactory::StreamData ToMuxerListenerData(
     const StreamDescriptor& stream) {
   MuxerListenerFactory::StreamData data;
@@ -71,11 +69,15 @@ MuxerListenerFactory::StreamData ToMuxerListenerData(
   data.hls_playlist_name = stream.hls_playlist_name;
   data.hls_iframe_playlist_name = stream.hls_iframe_playlist_name;
   data.hls_characteristics = stream.hls_characteristics;
+  data.forced_subtitle = stream.forced_subtitle;
   data.hls_only = stream.hls_only;
 
   data.dash_accessiblities = stream.dash_accessiblities;
   data.dash_roles = stream.dash_roles;
   data.dash_only = stream.dash_only;
+  data.index = stream.index;
+  data.dash_label = stream.dash_label;
+  data.input_format = stream.input_format;
   return data;
 };
 
@@ -223,33 +225,17 @@ Status ValidateStreamDescriptor(bool dump_stream_info,
   if (output_format == CONTAINER_UNKNOWN) {
     return Status(error::INVALID_ARGUMENT, "Unsupported output format.");
   }
-  if (output_format == MediaContainerName::CONTAINER_MPEG2TS) {
-    if (stream.segment_template.empty()) {
-      return Status(
-          error::INVALID_ARGUMENT,
-          "Please specify 'segment_template'. Single file TS output is "
-          "not supported.");
-    }
 
-    // Right now the init segment is saved in |output| for multi-segment
-    // content. However, for TS all segments must be self-initializing so
-    // there cannot be an init segment.
-    if (stream.output.length()) {
-      return Status(error::INVALID_ARGUMENT,
-                    "All TS segments must be self-initializing. Stream "
-                    "descriptors 'output' or 'init_segment' are not allowed.");
-    }
-  } else if (output_format == CONTAINER_WEBVTT ||
-             output_format == CONTAINER_TTML ||
-             output_format == CONTAINER_AAC || output_format == CONTAINER_MP3 ||
-             output_format == CONTAINER_AC3 ||
-             output_format == CONTAINER_EAC3) {
+  if (output_format == CONTAINER_WEBVTT || output_format == CONTAINER_TTML ||
+      output_format == CONTAINER_AAC || output_format == CONTAINER_MP3 ||
+      output_format == CONTAINER_AC3 || output_format == CONTAINER_EAC3 ||
+      output_format == CONTAINER_MPEG2TS) {
     // There is no need for an init segment when outputting because there is no
     // initialization data.
     if (stream.segment_template.length() && stream.output.length()) {
       return Status(
           error::INVALID_ARGUMENT,
-          "Segmented subtitles or PackedAudio output cannot have an init "
+          "Segmented subtitles, PackedAudio or TS output cannot have an init "
           "segment.  Do not specify stream descriptors 'output' or "
           "'init_segment' when using 'segment_template'.");
     }
@@ -432,6 +418,10 @@ bool StreamInfoToTextMediaInfo(const StreamDescriptor& stream_descriptor,
     text_info->set_language(language);
   }
 
+  if (stream_descriptor.index.has_value()) {
+    text_media_info->set_index(stream_descriptor.index.value());
+  }
+
   text_media_info->set_media_file_name(stream_descriptor.output);
   text_media_info->set_container_type(MediaInfo::CONTAINER_TEXT);
 
@@ -462,6 +452,7 @@ Status CreateDemuxer(const StreamDescriptor& stream,
                      std::shared_ptr<Demuxer>* new_demuxer) {
   std::shared_ptr<Demuxer> demuxer = std::make_shared<Demuxer>(stream.input);
   demuxer->set_dump_stream_info(packaging_params.test_params.dump_stream_info);
+  demuxer->set_input_format(stream.input_format);
 
   if (packaging_params.decryption_params.key_provider != KeyProvider::kNone) {
     std::unique_ptr<KeySource> decryption_key_source(
@@ -662,8 +653,8 @@ Status CreateAudioVideoJobs(
 
       std::vector<std::shared_ptr<MediaHandler>> handlers;
       if (is_text) {
-        handlers.emplace_back(
-            std::make_shared<TextPadder>(kDefaultTextZeroBiasMs));
+        handlers.emplace_back(std::make_shared<TextPadder>(
+            packaging_params.default_text_zero_bias_ms));
       }
       if (sync_points) {
         handlers.emplace_back(cue_aligner);
@@ -942,6 +933,7 @@ Status Packager::Initialize(
 
   media::MuxerFactory muxer_factory(packaging_params);
   if (packaging_params.test_params.inject_fake_clock) {
+    internal->fake_clock.reset(new media::FakeClock());
     muxer_factory.OverrideClock(internal->fake_clock);
   }
 

@@ -90,6 +90,8 @@ Codec FourCCToCodec(FourCC fourcc) {
       return kCodecDTSL;
     case FOURCC_dtse:
       return kCodecDTSE;
+    case FOURCC_dtsx:
+      return kCodecDTSX;
     case FOURCC_dtsp:
       return kCodecDTSP;
     case FOURCC_dtsm:
@@ -100,6 +102,8 @@ Codec FourCCToCodec(FourCC fourcc) {
       return kCodecEAC3;
     case FOURCC_ac_4:
       return kCodecAC4;
+    case FOURCC_alac:
+      return kCodecALAC;
     case FOURCC_fLaC:
       return kCodecFlac;
     case FOURCC_mha1:
@@ -491,6 +495,9 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           max_bitrate = entry.ddts.max_bitrate;
           avg_bitrate = entry.ddts.avg_bitrate;
           break;
+        case FOURCC_dtsx:
+          codec_config = entry.udts.data;
+          break;
         case FOURCC_ac_3:
           codec_config = entry.dac3.data;
           num_channels = static_cast<uint8_t>(GetAc3NumChannels(codec_config));
@@ -508,6 +515,9 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
             LOG(ERROR) << "Failed to parse dac4.";
             return false;
           }
+          break;
+        case FOURCC_alac:
+          codec_config = entry.alac.data;
           break;
         case FOURCC_fLaC:
           codec_config = entry.dfla.data;

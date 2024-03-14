@@ -76,6 +76,8 @@ FourCC CodecToFourCC(Codec codec, H26xStreamFormat h26x_stream_format) {
       return FOURCC_mp4a;
     case kCodecAC3:
       return FOURCC_ac_3;
+    case kCodecALAC:
+      return FOURCC_alac;
     case kCodecDTSC:
       return FOURCC_dtsc;
     case kCodecDTSH:
@@ -86,6 +88,8 @@ FourCC CodecToFourCC(Codec codec, H26xStreamFormat h26x_stream_format) {
       return FOURCC_dtse;
     case kCodecDTSM:
       return FOURCC_dtsm;
+    case kCodecDTSX:
+      return FOURCC_dtsx;
     case kCodecEAC3:
       return FOURCC_ec_3;
     case kCodecAC4:
@@ -498,6 +502,9 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       audio.ddts.sampling_frequency = audio_info->sampling_frequency();
       audio.ddts.pcm_sample_depth = audio_info->sample_bits();
       break;
+    case kCodecDTSX:
+      audio.udts.data = audio_info->codec_config();
+      break;
     case kCodecAC3:
       audio.dac3.data = audio_info->codec_config();
       break;
@@ -506,6 +513,9 @@ bool MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       break;
     case kCodecAC4:
       audio.dac4.data = audio_info->codec_config();
+      break;
+    case kCodecALAC:
+      audio.alac.data = audio_info->codec_config();
       break;
     case kCodecFlac:
       audio.dfla.data = audio_info->codec_config();
@@ -692,10 +702,7 @@ uint64_t MP4Muxer::IsoTimeNow() {
   const uint64_t kIsomTimeOffset = 2082844800l;
 
   // Get the current system time since January 1, 1970, in seconds.
-  std::chrono::system_clock::duration duration =
-      std::chrono::system_clock::now().time_since_epoch();
-  std::int64_t secondsSince1970 =
-      std::chrono::duration_cast<std::chrono::seconds>(duration).count();
+  std::int64_t secondsSince1970 = Now();
 
   // Add the offset of seconds between January 1, 1970, and January 1, 1904.
   return secondsSince1970 + kIsomTimeOffset;
