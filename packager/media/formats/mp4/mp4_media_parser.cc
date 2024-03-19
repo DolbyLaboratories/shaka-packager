@@ -143,10 +143,13 @@ std::vector<uint8_t> GetDOVIDecoderConfig(
   return std::vector<uint8_t>();
 }
 
-bool UpdateCodecStringForDolbyVision(
+bool UpdateDolbyVisionInfo(
     FourCC actual_format,
     const std::vector<CodecConfiguration>& configs,
-    std::string* codec_string) {
+    std::string* codec_string,
+    int8_t transfer_characteristics,
+    std::string* dovi_supplemental_codec_string,
+    FourCC* dovi_supplemental_profile) {
   DOVIDecoderConfigurationRecord dovi_config;
   if (!dovi_config.Parse(GetDOVIDecoderConfig(configs))) {
     LOG(ERROR) << "Failed to parse Dolby Vision decoder "
@@ -161,19 +164,21 @@ bool UpdateCodecStringForDolbyVision(
       *codec_string = dovi_config.GetCodecString(actual_format);
       break;
     case FOURCC_hev1:
-      // Backward compatibility mode. Two codecs are signalled: base codec
-      // without Dolby Vision and HDR with Dolby Vision.
-      *codec_string += ";" + dovi_config.GetCodecString(FOURCC_dvhe);
+      // Backward compatibility mode. Use supplemental codec indicating Dolby
+      // Dolby Vision content.
+      *dovi_supplemental_codec_string = dovi_config.GetCodecString(FOURCC_dvhe);
       break;
     case FOURCC_hvc1:
       // See above.
-      *codec_string += ";" + dovi_config.GetCodecString(FOURCC_dvh1);
+      *dovi_supplemental_codec_string = dovi_config.GetCodecString(FOURCC_dvh1);
       break;
     default:
       LOG(ERROR) << "Unsupported format with extra codec "
                  << FourCCToString(actual_format);
       return false;
   }
+  *dovi_supplemental_profile =
+      dovi_config.GetDoViSupplementalProfile(transfer_characteristics);
   return true;
 }
 
@@ -604,8 +609,12 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
                                &pixel_height);
       }
       std::string codec_string;
+      std::string dovi_supplemental_codec_string("");
+      FourCC dovi_supplemental_profile = FOURCC_NULL;
       uint8_t nalu_length_size = 0;
       uint8_t transfer_characteristics = 0;
+      uint8_t colour_primaries = 0;
+      uint8_t matrix_coefficients = 0;
 
       const FourCC actual_format = entry.GetActualFormat();
       const Codec video_codec = FourCCToCodec(actual_format);
@@ -685,11 +694,16 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           codec_string = hevc_config.GetCodecString(actual_format);
           nalu_length_size = hevc_config.nalu_length_size();
           transfer_characteristics = hevc_config.transfer_characteristics();
+          colour_primaries = hevc_config.colour_primaries();
+          matrix_coefficients = hevc_config.matrix_coefficients();
 
           if (!entry.extra_codec_configs.empty()) {
             // |extra_codec_configs| is present only for Dolby Vision.
-            if (!UpdateCodecStringForDolbyVision(
-                    actual_format, entry.extra_codec_configs, &codec_string)) {
+            if (!UpdateDolbyVisionInfo(
+                     actual_format, entry.extra_codec_configs, &codec_string,
+                     transfer_characteristics,
+                     &dovi_supplemental_codec_string,
+                     &dovi_supplemental_profile)) {
               return false;
             }
           }
@@ -736,7 +750,10 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           coded_width, coded_height, pixel_width, pixel_height,
           transfer_characteristics,
           0,  // trick_play_factor
-          nalu_length_size, track->media.header.language.code, is_encrypted));
+          nalu_length_size, track->media.header.language.code, is_encrypted,
+          colour_primaries, matrix_coefficients));
+      video_stream_info->set_supplemental_codec(dovi_supplemental_codec_string);
+      video_stream_info->set_supplemental_profile(dovi_supplemental_profile);
       video_stream_info->set_extra_config(entry.ExtraCodecConfigsAsVector());
       video_stream_info->set_colr_data((entry.colr.raw_box).data(),
                                        (entry.colr.raw_box).size());

@@ -191,6 +191,24 @@ class AdaptationSet {
   /// @param codec is the new codec to be set.
   void set_codec(const std::string& codec) { codec_ = codec; };
 
+  /// @return matrix_coefficients.
+  uint32_t matrix_coefficients() const { return matrix_coefficients_; }
+
+  /// Set AdaptationSet's video matrix coefficients.
+  /// @param matrix_coefficients is the video matrix coefficients.
+  void set_matrix_coefficients(const uint32_t& matrix_coefficients) {
+    matrix_coefficients_ = matrix_coefficients;
+  };
+
+    /// @return colour_primaries.
+  uint32_t colour_primaries() const { return colour_primaries_; }
+
+  /// Set AdaptationSet's video colour primaries.
+  /// @param colour_primaries is the video colour primaries.
+  void set_colour_primaries(const uint32_t& colour_primaries) {
+    colour_primaries_ = colour_primaries;
+  };
+
   /// @return transfer_characteristics.
   uint32_t transfer_characteristics() const {
     return transfer_characteristics_;
@@ -343,6 +361,10 @@ class AdaptationSet {
   // stream.
   std::vector<const AdaptationSet*> trick_play_references_;
 
+  // Matrix Coefficients.
+  uint32_t matrix_coefficients_ = 0;
+  // Colour Primaries.
+  uint32_t colour_primaries_ = 0;
   // Transfer characteristics.
   uint32_t transfer_characteristics_ = 0;
 

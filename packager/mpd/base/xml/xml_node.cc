@@ -26,6 +26,7 @@
 #include <packager/mpd/base/mpd_utils.h>
 #include <packager/mpd/base/segment_info.h>
 #include <packager/mpd/base/xml/scoped_xml_ptr.h>
+#include <packager/media/base/fourccs.h>
 
 ABSL_FLAG(bool,
           segment_template_constant_duration,
@@ -383,6 +384,14 @@ bool RepresentationXmlNode::AddVideoInfo(const VideoInfo& video_info,
     // TODO(hmchen): propagate this attribute up to the AdaptationSet, since
     // all are set to false.
     RCHECK(SetStringAttribute("codingDependency", "false"));
+  }
+  if (video_info.has_supplemental_profile() &&
+      video_info.supplemental_profile() != media::FOURCC_NULL) {
+    RCHECK(SetStringAttribute("scte214:supplementalCodecs",
+                              video_info.supplemental_codec()));
+    RCHECK(SetStringAttribute("scte214:supplementalProfiles",
+                              media::FourCCToString(static_cast<media::FourCC>(
+                                  video_info.supplemental_profile()))));
   }
   return true;
 }

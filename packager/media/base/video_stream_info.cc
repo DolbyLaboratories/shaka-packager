@@ -54,7 +54,9 @@ VideoStreamInfo::VideoStreamInfo(int track_id,
                                  uint32_t trick_play_factor,
                                  uint8_t nalu_length_size,
                                  const std::string& language,
-                                 bool is_encrypted)
+                                 bool is_encrypted,
+                                 uint8_t colour_primaries,
+                                 uint8_t matrix_coefficients)
     : StreamInfo(kStreamVideo,
                  track_id,
                  time_scale,
@@ -71,6 +73,8 @@ VideoStreamInfo::VideoStreamInfo(int track_id,
       pixel_width_(pixel_width),
       pixel_height_(pixel_height),
       transfer_characteristics_(transfer_characteristics),
+      colour_primaries_(colour_primaries),
+      matrix_coefficients_(matrix_coefficients),
       trick_play_factor_(trick_play_factor),
       nalu_length_size_(nalu_length_size) {}
 

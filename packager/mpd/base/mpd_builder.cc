@@ -43,10 +43,13 @@ bool AddMpdNameSpaceInfo(XmlNode* mpd) {
       "http://www.w3.org/2001/XMLSchema-instance";
   static const char kDashSchemaMpd2011[] =
       "urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd";
+  static const char kXmlNamespaceScte214[] =
+      "urn:scte:dash:scte214-extensions";
 
   RCHECK(mpd->SetStringAttribute("xmlns", kXmlNamespace));
   RCHECK(mpd->SetStringAttribute("xmlns:xsi", kXmlNamespaceXsi));
   RCHECK(mpd->SetStringAttribute("xsi:schemaLocation", kDashSchemaMpd2011));
+  RCHECK(mpd->SetStringAttribute("xmlns:scte214", kXmlNamespaceScte214));
 
   static const char kCencNamespace[] = "urn:mpeg:cenc:2013";
   static const char kMarlinNamespace[] =
@@ -59,6 +62,7 @@ bool AddMpdNameSpaceInfo(XmlNode* mpd) {
       {"mas", kMarlinNamespace},
       {"xlink", kXmlNamespaceXlink},
       {"mspr", kMsprNamespace},
+      {"scte214", kXmlNamespaceScte214},
   };
 
   for (const std::string& namespace_name : namespaces) {

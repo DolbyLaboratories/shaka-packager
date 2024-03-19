@@ -289,6 +289,10 @@ bool Period::SetNewAdaptationSetAttributes(
     if (new_adaptation_set->codec().find("dvh") == 0) {
       new_adaptation_set->set_transfer_characteristics(kTransferFunctionPQ);
     } else if (media_info.video_info().has_transfer_characteristics()) {
+      new_adaptation_set->set_matrix_coefficients(
+          media_info.video_info().matrix_coefficients());
+      new_adaptation_set->set_colour_primaries(
+          media_info.video_info().colour_primaries());
       new_adaptation_set->set_transfer_characteristics(
           media_info.video_info().transfer_characteristics());
     }

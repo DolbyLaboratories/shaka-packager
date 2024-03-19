@@ -310,6 +310,22 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
     }
   }
 
+      // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
+  if (IsVideo() && matrix_coefficients_ > 0 &&
+      !adaptation_set.AddSupplementalProperty(
+          "urn:mpeg:mpegB:cicp:MatrixCoefficients",
+          std::to_string(matrix_coefficients_))) {
+    return std::nullopt;
+  }
+
+  // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
+  if (IsVideo() && colour_primaries_ > 0 &&
+      !adaptation_set.AddSupplementalProperty(
+          "urn:mpeg:mpegB:cicp:ColourPrimaries",
+          std::to_string(colour_primaries_))) {
+    return std::nullopt;
+  }
+
   // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
   if (IsVideo() && transfer_characteristics_ > 0 &&
       !adaptation_set.AddSupplementalProperty(

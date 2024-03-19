@@ -393,6 +393,13 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   if (media_info.has_video_info()) {
     stream_type_ = MediaPlaylistStreamType::kVideo;
     codec_ = AdjustVideoCodec(media_info.video_info().codec());
+    if (media_info.video_info().has_supplemental_codec() &&
+        media_info.video_info().has_supplemental_profile()) {
+      supplemental_codec_ =
+          AdjustVideoCodec(media_info.video_info().supplemental_codec());
+      supplemental_profile_ = static_cast<media::FourCC>(
+          media_info.video_info().supplemental_profile());
+    }
   } else if (media_info.has_audio_info()) {
     stream_type_ = MediaPlaylistStreamType::kAudio;
     codec_ = media_info.audio_info().codec();
