@@ -25,7 +25,7 @@ jobs:
       tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
       # Create/update release PR
-      - uses: google-github-actions/release-please-action@v4
+      - uses: googleapis/release-please-action@v4
         id: release
         with:
           # Make sure we create the PR against the correct branch.
@@ -55,6 +55,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-tags: true
+          persist-credentials: false
 
       - name: Compute latest
         id: compute
@@ -83,6 +84,10 @@ jobs:
     uses: ./.github/workflows/publish-docs.yaml
     with:
       ref: refs/tags/${{ needs.release.outputs.tag_name }}
+    # Required permissions to deploy to GitHub Pages:
+    permissions:
+      pages: write
+      id-token: write
 
   # Publish official docker image
   docker:
