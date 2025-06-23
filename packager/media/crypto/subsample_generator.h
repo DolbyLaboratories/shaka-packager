@@ -20,6 +20,7 @@ namespace media {
 class AV1Parser;
 class VideoSliceHeaderParser;
 class VPxParser;
+class AC4Parser;
 struct SubsampleEntry;
 
 /// Parsing and generating encryption subsamples from bitstreams. Note that the
@@ -74,6 +75,10 @@ class SubsampleGenerator {
       const uint8_t* frame,
       size_t frame_size,
       std::vector<SubsampleEntry>* subsamples);
+  Status GenerateSubsamplesFromAC4Frame(
+      const uint8_t* frame,
+      size_t frame_size,
+      std::vector<SubsampleEntry>* subsamples);
   Status GenerateSubsamplesFromH26xFrame(
       const uint8_t* frame,
       size_t frame_size,
@@ -103,6 +108,8 @@ class SubsampleGenerator {
   std::unique_ptr<VideoSliceHeaderParser> header_parser_;
   // AV1 parser for AV1 streams.
   std::unique_ptr<AV1Parser> av1_parser_;
+  // AC4 parser for AC4 streams.
+  std::unique_ptr<AC4Parser> ac4_parser_;
 };
 
 }  // namespace media
