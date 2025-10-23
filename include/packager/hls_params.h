@@ -72,6 +72,8 @@ struct HlsParams {
   std::optional<double> start_time_offset;
   /// Create EXT-X-SESSION-KEY in master playlist
   bool create_session_keys;
+  /// Don't map codecs to preferred codec value
+  bool dont_adjust_video_codecs;
 };
 
 }  // namespace shaka

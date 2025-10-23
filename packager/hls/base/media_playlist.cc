@@ -388,11 +388,14 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
 
   if (media_info.has_video_info()) {
     stream_type_ = MediaPlaylistStreamType::kVideo;
-    codec_ = AdjustVideoCodec(media_info.video_info().codec());
+    codec_ = media_info.video_info().codec();
+    if (!hls_params_.dont_adjust_video_codecs)
+      codec_ = AdjustVideoCodec(codec_);
     if (media_info.video_info().has_supplemental_codec() &&
         media_info.video_info().has_compatible_brand()) {
-      supplemental_codec_ =
-          AdjustVideoCodec(media_info.video_info().supplemental_codec());
+      supplemental_codec_ = media_info.video_info().supplemental_codec();
+      if (!hls_params_.dont_adjust_video_codecs)
+        supplemental_codec_ = AdjustVideoCodec(supplemental_codec_);
       compatible_brand_ = static_cast<media::FourCC>(
           media_info.video_info().compatible_brand());
     }

@@ -51,3 +51,7 @@ ABSL_FLAG(bool,
           false,
           "Playback of Offline HLS assets shall use EXT-X-SESSION-KEY "
           "to declare all eligible content keys in the master playlist.");
+ABSL_FLAG(bool,
+          dont_adjust_video_codecs,
+          false,
+          "Don't map codecs to preferred codec value.");
