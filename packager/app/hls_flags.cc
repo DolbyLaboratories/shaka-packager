@@ -52,6 +52,9 @@ ABSL_FLAG(bool,
           "Playback of Offline HLS assets shall use EXT-X-SESSION-KEY "
           "to declare all eligible content keys in the master playlist.");
 ABSL_FLAG(bool,
-          dont_adjust_video_codecs,
+          strict_codecs_signaling,
           false,
-          "Don't map codecs to preferred codec value.");
+          "Don't map codecs to a preferred codec value, but strictly "
+          "preserved the fourcc in the media. This may cause playback "
+          "issues on some Apple devices, but strictly complies with the "
+          "HLS specification.");
