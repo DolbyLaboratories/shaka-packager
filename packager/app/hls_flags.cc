@@ -55,6 +55,6 @@ ABSL_FLAG(bool,
           strict_codecs_signaling,
           false,
           "Don't map codecs to a preferred codec value, but strictly "
-          "preserved the fourcc in the media. This may cause playback "
+          "preserve the fourcc in the media. This may cause playback "
           "issues on some Apple devices, but strictly complies with the "
           "HLS specification.");
