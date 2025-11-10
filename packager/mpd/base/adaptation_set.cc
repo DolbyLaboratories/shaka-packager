@@ -383,27 +383,51 @@ std::optional<xml::XmlNode> AdaptationSet::GetXml() {
   }
 
   // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
-  if (IsVideo() && matrix_coefficients_ > 0 &&
-      !adaptation_set.AddSupplementalProperty(
+  if (IsVideo() && matrix_coefficients_ > 0) {
+    bool ok = false;
+    if (mpd_options_.mpd_params.use_colorimetry_essential_property) {
+      ok = adaptation_set.AddEssentialProperty(
           "urn:mpeg:mpegB:cicp:MatrixCoefficients",
-          std::to_string(matrix_coefficients_))) {
-    return std::nullopt;
+          std::to_string(matrix_coefficients_));
+    } else  {
+      ok = adaptation_set.AddSupplementalProperty(
+          "urn:mpeg:mpegB:cicp:MatrixCoefficients",
+          std::to_string(matrix_coefficients_));
+    }
+    if (!ok)
+        return std::nullopt;
   }
 
   // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
-  if (IsVideo() && color_primaries_ > 0 &&
-      !adaptation_set.AddSupplementalProperty(
+  if (IsVideo() && color_primaries_ > 0) {
+    bool ok = false;
+    if (mpd_options_.mpd_params.use_colorimetry_essential_property) {
+      ok = adaptation_set.AddEssentialProperty(
           "urn:mpeg:mpegB:cicp:ColourPrimaries",
-          std::to_string(color_primaries_))) {
-    return std::nullopt;
+          std::to_string(color_primaries_));
+    } else {
+      ok = adaptation_set.AddSupplementalProperty(
+          "urn:mpeg:mpegB:cicp:ColourPrimaries",
+          std::to_string(color_primaries_));
+    }
+    if (!ok)
+      return std::nullopt;
   }
 
   // https://dashif.org/docs/DASH-IF-IOP-v4.3.pdf - 4.2.5.1
-  if (IsVideo() && transfer_characteristics_ > 0 &&
-      !adaptation_set.AddSupplementalProperty(
+  if (IsVideo() && transfer_characteristics_ > 0) {
+    bool ok = false;
+    if (mpd_options_.mpd_params.use_colorimetry_essential_property) {
+      ok = adaptation_set.AddEssentialProperty(
           "urn:mpeg:mpegB:cicp:TransferCharacteristics",
-          std::to_string(transfer_characteristics_))) {
-    return std::nullopt;
+          std::to_string(transfer_characteristics_));
+    } else {
+      ok = adaptation_set.AddSupplementalProperty(
+          "urn:mpeg:mpegB:cicp:TransferCharacteristics",
+          std::to_string(transfer_characteristics_));
+    }
+    if (!ok)
+      return std::nullopt;
   }
 
   // Note: must be checked before checking segments_aligned_ (below). So that

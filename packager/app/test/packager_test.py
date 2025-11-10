@@ -489,7 +489,8 @@ class PackagerAppTest(unittest.TestCase):
                 dash_force_segment_list=False,
                 force_cl_index=None,
                 start_segment_number=None,
-                use_dovi_supplemental_codecs=None):
+                use_dovi_supplemental_codecs=None
+                use_colorimetry_essentail_properity=None):
     flags = ['--single_threaded']
 
     if not strip_parameter_set_nalus:
@@ -549,6 +550,9 @@ class PackagerAppTest(unittest.TestCase):
 
     if use_dovi_supplemental_codecs:
       flags.append('--use_dovi_supplemental_codecs')
+
+    if use_colorimetry_essential_property:
+      flags.append('--use_colorimetry_essential_property')
 
     if output_media_info:
       flags.append('--output_media_info')
@@ -1495,7 +1499,10 @@ class PackagerFunctionalTest(PackagerAppTest):
     streams = [
         self._GetStream('video', test_file='sparks_dovi_8.mp4')
     ]
-    flags = self._GetFlags(encryption=True, output_dash=True, output_hls=True)
+    flags = self._GetFlags(encryption=True,
+                           output_dash=True,
+                           output_hls=True,
+                           use_colorimetry_essential_property=True)
 
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('dolby-vision-profile-8-with-encryption')
@@ -1513,7 +1520,8 @@ class PackagerFunctionalTest(PackagerAppTest):
     ]
     flags = self._GetFlags(output_dash=True,
                            output_hls=True,
-                           use_dovi_supplemental_codecs=True)
+                           use_dovi_supplemental_codecs=True,
+                           use_colorimetry_essential_property=True)
 
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('dolby-vision-profile-8-supplemental-codecs')
@@ -1531,7 +1539,8 @@ class PackagerFunctionalTest(PackagerAppTest):
     ]
     flags = self._GetFlags(output_dash=True,
                            output_hls=True,
-                           use_dovi_supplemental_codecs=True)
+                           use_dovi_supplemental_codecs=True,
+                           use_colorimetry_essential_property=True)
 
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('dolby-vision-profile-10-supplemental-codecs')
