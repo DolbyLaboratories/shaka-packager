@@ -16,8 +16,6 @@ namespace media {
 
 class BitReader;
 
-/// AV1 bitstream parser implemented according to av1 bitstream specification:
-/// https://aomediacodec.github.io/av1-spec/.
 class AC4Parser {
  public:
   struct FrameRateMultiplyInfo {
@@ -202,14 +200,6 @@ class AC4Parser {
   AC4Parser();
   virtual ~AC4Parser();
 
-  /// Parse an AV1 sample. Note that the sample data SHALL be a sequence of OBUs
-  /// forming a Temporal Unit, with each OBU SHALL follow the
-  /// open_bitstream_unit Low Overhead Bitstream Format syntax. See
-  /// https://aomediacodec.github.io/av1-isobmff/#sampleformat for details.
-  /// @param[out] on success, tiles will be filled with the tile information if
-  ///             @a data contains Frame OBU or TileGroup OBU; It will be empty
-  ///             otherwise.
-  /// @return true on success, false otherwise.
   virtual bool Parse(const uint8_t* data,
                      size_t data_size);
   int GetAc4TocSize() { return toc_size; };
