@@ -1542,7 +1542,8 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testDolbyVisionDvh1P81(self):
     streams = [
-        self._GetStream('video', test_file='color_pattern_24_dvh1_081_1920x1080.mp4')
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvh1_081_1920x1080.mp4')
     ]
     flags = self._GetFlags(output_dash=True, output_hls=True)
 
@@ -1551,7 +1552,8 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testDolbyVisionDvh1P84(self):
     streams = [
-        self._GetStream('video', test_file='color_pattern_24_dvh1_084_1920x1080.mp4')
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvh1_084_1920x1080.mp4')
     ]
     flags = self._GetFlags(output_dash=True, output_hls=True)
 
@@ -1560,7 +1562,8 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testDolbyVisionDvheP81(self):
     streams = [
-        self._GetStream('video', test_file='color_pattern_24_dvhe_081_1920x1080.mp4')
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvhe_081_1920x1080.mp4')
     ]
     flags = self._GetFlags(output_dash=True, output_hls=True)
 
@@ -1569,7 +1572,8 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testDolbyVisionDvheP84(self):
     streams = [
-        self._GetStream('video', test_file='color_pattern_24_dvhe_084_1920x1080.mp4')
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvhe_084_1920x1080.mp4')
     ]
     flags = self._GetFlags(output_dash=True, output_hls=True)
 
@@ -1578,36 +1582,48 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testDolbyVisionDvh1P81UsingSupplementalCodecs(self):
     streams = [
-        self._GetStream('video', test_file='color_pattern_24_dvh1_081_1920x1080.mp4')
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvh1_081_1920x1080.mp4')
     ]
-    flags = self._GetFlags(output_dash=True, output_hls=True, use_dovi_supplemental_codecs=True)
+    flags = self._GetFlags(output_dash=True,
+                           output_hls=True,
+                           use_dovi_supplemental_codecs=True)
 
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('dolby-vision-dvh1-p81-with-supplemental-codecs')
 
   def testDolbyVisionDvh1P84UsingSupplementalCodecs(self):
     streams = [
-        self._GetStream('video', test_file='color_pattern_24_dvh1_084_1920x1080.mp4')
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvh1_084_1920x1080.mp4')
     ]
-    flags = self._GetFlags(output_dash=True, output_hls=True, use_dovi_supplemental_codecs=True)
+    flags = self._GetFlags(output_dash=True,
+                           output_hls=True,
+                           use_dovi_supplemental_codecs=True)
 
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('dolby-vision-dvh1-p84-with-supplemental-codecs')
 
   def testDolbyVisionDvheP81UsingSupplementalCodecs(self):
     streams = [
-        self._GetStream('video', test_file='color_pattern_24_dvhe_081_1920x1080.mp4')
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvhe_081_1920x1080.mp4')
     ]
-    flags = self._GetFlags(output_dash=True, output_hls=True, use_dovi_supplemental_codecs=True)
+    flags = self._GetFlags(output_dash=True,
+                           output_hls=True,
+                           use_dovi_supplemental_codecs=True)
 
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('dolby-vision-dvhe-p81-with-supplemental-codecs')
 
   def testDolbyVisionDvheP84UsingSupplementalCodecs(self):
     streams = [
-        self._GetStream('video', test_file='color_pattern_24_dvhe_084_1920x1080.mp4')
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvhe_084_1920x1080.mp4')
     ]
-    flags = self._GetFlags(output_dash=True, output_hls=True, use_dovi_supplemental_codecs=True)
+    flags = self._GetFlags(output_dash=True,
+                           output_hls=True,
+                           use_dovi_supplemental_codecs=True)
 
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('dolby-vision-dvhe-p84-with-supplemental-codecs')
@@ -1615,7 +1631,8 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testDolbyVisionDvh1P81WithEncryption(self):
     streams = [
-        self._GetStream('video', test_file='color_pattern_24_dvh1_081_1920x1080.mp4')
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvh1_081_1920x1080.mp4')
     ]
     flags = self._GetFlags(encryption=True, output_dash=True, output_hls=True)
 
@@ -1624,7 +1641,8 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testDolbyVisionDvh1P84WithEncryption(self):
     streams = [
-        self._GetStream('video', test_file='color_pattern_24_dvh1_084_1920x1080.mp4')
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvh1_084_1920x1080.mp4')
     ]
     flags = self._GetFlags(encryption=True, output_dash=True, output_hls=True)
 
@@ -1633,8 +1651,10 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testDolbyVisionDvheP81WithEncryption(self):
     streams = [
-        self._GetStream('video', test_file='color_pattern_24_dvhe_081_1920x1080.mp4')
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvhe_081_1920x1080.mp4')
     ]
+
     flags = self._GetFlags(encryption=True, output_dash=True, output_hls=True)
 
     self.assertPackageSuccess(streams, flags)
@@ -1642,7 +1662,8 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testDolbyVisionDvheP84WithEncryption(self):
     streams = [
-        self._GetStream('video', test_file='color_pattern_24_dvhe_084_1920x1080.mp4')
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvhe_084_1920x1080.mp4')
     ]
     flags = self._GetFlags(encryption=True, output_dash=True, output_hls=True)
 
@@ -1651,7 +1672,8 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testDolbyVisionDvh1P81WithStrictCodecsSignaling(self):
     streams = [
-        self._GetStream('video', test_file='color_pattern_24_dvh1_081_1920x1080.mp4')
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvh1_081_1920x1080.mp4')
     ]
     flags = self._GetFlags(output_hls=True, strict_codecs_signaling=True)
 
@@ -1660,7 +1682,8 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testDolbyVisionDvh1P84WithStrictCodecsSignaling(self):
     streams = [
-        self._GetStream('video', test_file='color_pattern_24_dvh1_084_1920x1080.mp4')
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvh1_084_1920x1080.mp4')
     ]
     flags = self._GetFlags(output_hls=True, strict_codecs_signaling=True)
 
@@ -1669,7 +1692,8 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testDolbyVisionDvheP81WithStrictCodecsSignaling(self):
     streams = [
-        self._GetStream('video', test_file='color_pattern_24_dvhe_081_1920x1080.mp4')
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvhe_081_1920x1080.mp4')
     ]
     flags = self._GetFlags(output_hls=True, strict_codecs_signaling=True)
 
@@ -1678,7 +1702,8 @@ class PackagerFunctionalTest(PackagerAppTest):
 
   def testDolbyVisionDvheP84WithStrictCodecsSignaling(self):
     streams = [
-        self._GetStream('video', test_file='color_pattern_24_dvhe_084_1920x1080.mp4')
+        self._GetStream('video',
+                        test_file='color_pattern_24_dvhe_084_1920x1080.mp4')
     ]
     flags = self._GetFlags(output_hls=True, strict_codecs_signaling=True)
 
