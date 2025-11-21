@@ -489,7 +489,7 @@ class PackagerAppTest(unittest.TestCase):
                 dash_force_segment_list=False,
                 force_cl_index=None,
                 start_segment_number=None,
-                use_dovi_supplemental_codecs=None
+                use_dovi_supplemental_codecs=None,
                 use_colorimetry_essentail_properity=None):
     flags = ['--single_threaded']
 
