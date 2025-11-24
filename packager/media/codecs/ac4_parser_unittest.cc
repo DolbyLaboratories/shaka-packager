@@ -16,7 +16,7 @@ using ::testing::ElementsAre;
 namespace shaka {
 namespace media {
 
-    const uint8_t valid_ac4_data[] = {
+const uint8_t valid_ac4_data[] = {
     0xac, 0x41, 0xff, 0xff, 0x00, 0x01, 0x5c, 0xbf, 0xce, 0xe7, 0x98, 0x40, 0x04, 0xa7, 0x01, 0x2e,
     0x2c, 0x20, 0x30, 0x4d, 0x80, 0x5c, 0x84, 0x58, 0xd0, 0xa0, 0xc0, 0x60, 0x13, 0xb5, 0x83, 0x54,
     0xcb, 0x61, 0x39, 0x12, 0x14, 0x4b, 0x02, 0x32, 0xbe, 0x85, 0x4b, 0x48, 0x00, 0x02, 0x5c, 0x71,
@@ -72,15 +72,7 @@ TEST(AC4ParserTest, ParseInvalidData) {
 TEST(AC4ParserTest, ParseValidSimpleData) {  
   AC4Parser parser;
   EXPECT_TRUE(parser.Parse(valid_ac4_data, sizeof(valid_ac4_data)));
-  size_t size = parser.GetAc4TocSize();
-  printf("size: %zu\n", size);
-}
-
-TEST(AC4ParserTest, GetAc4TocSize) {  
-  AC4Parser parser;
-  EXPECT_TRUE(parser.Parse(valid_ac4_data, sizeof(valid_ac4_data)));
-  // The TOC size should be greater than 0
-  EXPECT_GT(parser.GetAc4TocSize(), 0);
+  EXPECT_EQ(parser.GetAc4TocSize(), 906u);
 }
 
 }  // namespace media

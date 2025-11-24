@@ -327,15 +327,12 @@ bool AC4Parser::ParseFrameRateMultiplyInfo(BitReader* reader) {
   }
   return true;
 }
+
 bool AC4Parser::ParseFrameRateFractionsInfo(BitReader* reader) {
   FrameRateFractionsInfo frame_rate_fractions_info;
-  //int frame_rate_fraction = 1;
   if (ac4_toc.frame_rate_index >= 5 && ac4_toc.frame_rate_index <= 9) {
     RCHECK(
         reader->ReadBits(1, &frame_rate_fractions_info.b_frame_rate_fraction));
-    // if (frame_rate_fractions_info.b_frame_rate_fraction == 1) {
-    //   frame_rate_fraction = 2;
-    // }
   }
   if (ac4_toc.frame_rate_index >= 10 && ac4_toc.frame_rate_index <= 12) {
     RCHECK(
@@ -343,16 +340,11 @@ bool AC4Parser::ParseFrameRateFractionsInfo(BitReader* reader) {
     if (frame_rate_fractions_info.b_frame_rate_fraction == 1) {
       RCHECK(reader->ReadBits(
           1, &frame_rate_fractions_info.b_frame_rate_fraction_is_4));
-      // if (frame_rate_fractions_info.b_frame_rate_fraction_is_4 == 1){
-      //   frame_rate_fraction = 4;
-      // } else {
-      //   frame_rate_fraction = 2;
-      // }
-      
     }
   }
   return true;
 }
+
 bool AC4Parser::ParseEmdfInfo(BitReader* reader) {
   EmdfInfo emdf_info;
   RCHECK(reader->ReadBits(2, &emdf_info.emdf_version));
@@ -387,7 +379,9 @@ bool AC4Parser::ParseEmdfInfo(BitReader* reader) {
       }
       break;
     default:
-      // Error
+      LOG(ERROR) << "Invalid EMDF primary protection length: "
+                 << static_cast<int>(emdf_info.protection_length_primary);
+      return false;
       break;
   }
   // protection_bits_secondary
@@ -408,11 +402,13 @@ bool AC4Parser::ParseEmdfInfo(BitReader* reader) {
       }
       break;
     default:
-      // TODO: Error
-      break;
+      LOG(ERROR) << "Invalid EMDF secondary protection length: "
+                 << static_cast<int>(emdf_info.protection_length_secondary);
+      return false;
   }
   return true;
 }
+
 bool AC4Parser::ParseAc4PresentationSubstreamInfo(BitReader* reader) {
   Ac4PresentationV1Info ac4_presentation_v1_info;
   RCHECK(reader->ReadBits(1, &ac4_presentation_v1_info.b_alternative));
@@ -427,7 +423,7 @@ bool AC4Parser::ParseAc4PresentationSubstreamInfo(BitReader* reader) {
 int AC4Parser::ParseAc4SgiSpecifier(BitReader* reader) {
   int group_index = 0;
   if (ac4_toc.bitstream_version == 1) {
-    // Error
+    // ac4_substream_group_info();
   } else {
     RCHECK(reader->ReadBits(3, &group_index));
     if (group_index == 7) {
@@ -590,6 +586,7 @@ bool AC4Parser::ParseAc4HsfExtSubstreamInfo(BitReader* reader,
   }
   return true;
 }
+
 bool AC4Parser::ParseAc4SubstreamInfoChan(BitReader* reader,
                                           int presentation_version,
                                           int fs_index,

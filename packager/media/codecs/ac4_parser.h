@@ -141,7 +141,6 @@ class AC4Parser {
     int b_alternative = 0;
     int b_pres_ndot = 0;
     int substream_index = 0;
-    //
     EmdfInfo* emdf_infos;
   };
 
@@ -156,12 +155,9 @@ class AC4Parser {
     Ac4SubstreamInfoChan* substream_info_chan;
     // ac4_hsf_ext_substream_info
     int substream_index;
-    //
     int b_oamd_substream = 0;
     // oamd_substream_info
     int b_oamd_ndot = 0;
-    // int substream_index = 0;
-    //
     int b_ajoc = 0;
     Ac4SubstreamInfoAjoc* substream_info_ajoc;
     Ac4SubstreamInfoObj* substream_info_obj;
@@ -197,6 +193,7 @@ class AC4Parser {
     Ac4PresentationV1Info* presentation_v1_infos;
     Ac4SubstreamGroupInfo* substream_group_infos;
   };
+  
   AC4Parser();
   virtual ~AC4Parser();
 
