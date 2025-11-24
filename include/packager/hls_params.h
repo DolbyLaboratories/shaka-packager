@@ -73,7 +73,7 @@ struct HlsParams {
   /// Create EXT-X-SESSION-KEY in master playlist
   bool create_session_keys;
   /// Don't map codecs to preferred codec value.
-  bool strict_codecs_signaling;
+  bool strict_codecs_signaling = false;
 };
 
 }  // namespace shaka
