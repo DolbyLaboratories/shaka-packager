@@ -52,6 +52,10 @@ ABSL_FLAG(bool,
           "Playback of Offline HLS assets shall use EXT-X-SESSION-KEY "
           "to declare all eligible content keys in the master playlist.");
 ABSL_FLAG(bool,
+          add_program_date_time,
+          false,
+          "Add EXT-X-PROGRAM-DATE-TIME tag to the playlist. The date time is "
+          "derived from the current wall clock time.");
           strict_codecs_signaling,
           false,
           "Don't map codecs to a preferred codec value, but strictly "
