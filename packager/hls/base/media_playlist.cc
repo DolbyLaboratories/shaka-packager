@@ -414,7 +414,7 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
         media_info.video_info().has_compatible_brand()) {
       supplemental_codec_ = hls_params_.strict_codecs_signaling
         ? media_info.video_info().supplemental_codec()
-        : AdjustVideoCodec(media_info.video_info().codec());
+        : AdjustVideoCodec(media_info.video_info().supplemental_codec());
       compatible_brand_ = static_cast<media::FourCC>(
           media_info.video_info().compatible_brand());
     }
