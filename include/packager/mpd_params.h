@@ -104,7 +104,7 @@ struct MpdParams {
   double target_latency_seconds = 1;
   // If enabled, use EssentialProperty instead of SupplementalProperty
   // for video colorimetry descriptors.
-  bool use_colorimetry_essential_property;
+  bool use_colorimetry_essential_property = false;
 };
 
 }  // namespace shaka
