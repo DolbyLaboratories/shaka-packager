@@ -490,7 +490,7 @@ class PackagerAppTest(unittest.TestCase):
                 force_cl_index=None,
                 start_segment_number=None,
                 use_dovi_supplemental_codecs=None,
-                use_colorimetry_essentail_properity=None):
+                use_colorimetry_essential_property=None):
     flags = ['--single_threaded']
 
     if not strip_parameter_set_nalus:
@@ -1499,10 +1499,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     streams = [
         self._GetStream('video', test_file='sparks_dovi_8.mp4')
     ]
-    flags = self._GetFlags(encryption=True,
-                           output_dash=True,
-                           output_hls=True,
-                           use_colorimetry_essential_property=True)
+    flags = self._GetFlags(encryption=True, output_dash=True, output_hls=True)
 
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('dolby-vision-profile-8-with-encryption')
@@ -1520,8 +1517,7 @@ class PackagerFunctionalTest(PackagerAppTest):
     ]
     flags = self._GetFlags(output_dash=True,
                            output_hls=True,
-                           use_dovi_supplemental_codecs=True,
-                           use_colorimetry_essential_property=True)
+                           use_dovi_supplemental_codecs=True)
 
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('dolby-vision-profile-8-supplemental-codecs')
@@ -1539,11 +1535,36 @@ class PackagerFunctionalTest(PackagerAppTest):
     ]
     flags = self._GetFlags(output_dash=True,
                            output_hls=True,
+                           use_dovi_supplemental_codecs=True)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('dolby-vision-profile-10-supplemental-codecs')
+
+
+
+  def testColorimetrySupplementalProperties(self):
+    streams = [
+      self._GetStream('video', test_file='sparks_dovi_8.mp4')
+    ]
+    flags = self._GetFlags(output_dash=True,
+                           output_hls=True,
+                           use_dovi_supplemental_codecs=True,
+                           use_colorimetry_essential_property=False)
+
+    self.assertPackageSuccess(streams, flags)
+    self._CheckTestResults('colorimetry-supplemental-property')
+
+  def testColorimetryEssentialProperties(self):
+    streams = [
+      self._GetStream('video', test_file='sparks_dovi_8.mp4')
+    ]
+    flags = self._GetFlags(output_dash=True,
+                           output_hls=True,
                            use_dovi_supplemental_codecs=True,
                            use_colorimetry_essential_property=True)
 
     self.assertPackageSuccess(streams, flags)
-    self._CheckTestResults('dolby-vision-profile-10-supplemental-codecs')
+    self._CheckTestResults('colorimetry-essential-property')
 
   def testVp8Mp4WithEncryption(self):
     streams = [
