@@ -1548,7 +1548,7 @@ class PackagerFunctionalTest(PackagerAppTest):
                            output_dash=True,
                            output_hls=True,
                            use_dovi_supplemental_codecs=True,
-                           use_colorimetry_essential_property=False)
+                           use_colorimetry_essential_property=True)
 
     self.assertPackageSuccess(streams, flags)
     self._CheckTestResults('colorimetry-essential-property')
