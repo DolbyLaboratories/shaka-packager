@@ -133,6 +133,14 @@ class DiffFilesPolicy(object):
 
       output = self._GitDiff(expected_file, actual_file)
 
+      # If this is an MP4 file, get a better looking diff.
+      if (output and
+          os.path.splitext(actual_file)[1] in {'.mp4', '.m4s'}):
+        new_output = self._Mp4Diff(
+            out_dir, expected_file, actual_file)
+
+        output = new_output or output
+
       if output:
         failure_messages += [output.decode('utf8')]
 
