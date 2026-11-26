@@ -249,7 +249,7 @@ Status ValidateStreamDescriptor(bool dump_stream_info,
   if (output_format == CONTAINER_WEBVTT || output_format == CONTAINER_TTML ||
       output_format == CONTAINER_AAC || output_format == CONTAINER_MP3 ||
       output_format == CONTAINER_AC3 || output_format == CONTAINER_EAC3 ||
-      output_format == CONTAINER_MPEG2TS) {
+      output_format == CONTAINER_AC4 || output_format == CONTAINER_MPEG2TS) {
     // There is no need for an init segment when outputting because there is no
     // initialization data.
     if (stream.segment_template.length() && stream.output.length()) {

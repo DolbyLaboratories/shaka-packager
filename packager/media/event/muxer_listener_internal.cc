@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -29,6 +30,8 @@
 #include <packager/media/codecs/dts_audio_specific_config.h>
 #include <packager/media/codecs/ec3_audio_util.h>
 #include <packager/media/event/muxer_listener.h>
+#include <packager/media/formats/mp4/box_definitions.h>
+#include <packager/media/formats/mp4/box_reader.h>
 #include <packager/mpd/base/media_info.pb.h>
 #include <packager/utils/bytes_to_string_view.h>
 
@@ -175,12 +178,55 @@ void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
     codec_data->set_channel_mpeg_value(ac4_channel_mpeg_value);
     bool ac4_ims_flag;
     bool ac4_cbi_flag;
-    if (!GetAc4ImmersiveInfo(codec_config, &ac4_ims_flag, &ac4_cbi_flag)) {
+    bool ac4_joc_flag;
+    uint32_t ac4_joc_nums;
+    if (!GetAc4ImmersiveInfo(codec_config, &ac4_ims_flag, &ac4_cbi_flag,
+                             &ac4_joc_flag, &ac4_joc_nums)) {
       LOG(ERROR) << "Failed to obtain AC4 IMS flag and CBI flag.";
       return;
     }
     codec_data->set_ac4_ims_flag(ac4_ims_flag);
     codec_data->set_ac4_cbi_flag(ac4_cbi_flag);
+    codec_data->set_ac4_joc_flag(ac4_joc_flag);
+    codec_data->set_ac4_joc_nums(ac4_joc_nums);
+
+    const auto& meta_box_data = audio_stream_info->meta_box_data();
+    if (!meta_box_data.empty()) {
+      bool err = false;
+      std::unique_ptr<mp4::BoxReader> reader(mp4::BoxReader::ReadBox(
+          meta_box_data.data(), meta_box_data.size(), &err));
+      mp4::Meta meta;
+      if (err || !reader || reader->type() != FOURCC_meta ||
+          !meta.Parse(reader.get())) {
+        LOG(WARNING) << "Failed to parse AC-4 preselection metadata.";
+      } else {
+        for (const auto& preselection : meta.grpl.Preselections) {
+          auto* proto_preselection = codec_data->add_ac4_preselections();
+          proto_preselection->set_group_id(
+              std::to_string(preselection.group_id));
+          proto_preselection->set_selection_priority(
+              preselection.selection_priority);
+          for (const auto& kind : preselection.kinds) {
+            auto* proto_role = proto_preselection->add_roles();
+            proto_role->set_scheme(kind.scheme_uri);
+            proto_role->set_value(kind.value);
+          }
+          proto_preselection->set_dialog_gain(
+              preselection.udta.dialog_album_peaks.dialog_gain);
+          for (const auto& label : preselection.labels) {
+            auto* proto_label = proto_preselection->add_labels();
+            proto_label->set_lang(label.language);
+            proto_label->set_value(label.label);
+          }
+          if (!preselection.extended_languages.empty()) {
+            proto_preselection->set_lang(
+                preselection.extended_languages[0].extended_language);
+          }
+          proto_preselection->set_preselection_tag(
+              preselection.preselection_tag);
+        }
+      }
+    }
   }
 
   if (audio_stream_info->codec() == kCodecDTSX) {

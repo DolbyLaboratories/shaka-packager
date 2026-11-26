@@ -99,6 +99,10 @@ class PackedAudioSegmenter {
   // AAC is carried in ADTS.
   std::unique_ptr<AACAudioSpecificConfig> adts_converter_;
 
+  // AC4 need AC40/AC41 + frame_size header
+  bool write_ac4_header_ = false;
+  uint8_t ac4_header_[7];
+
   BufferWriter segment_buffer_;
 };
 

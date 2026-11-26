@@ -380,6 +380,11 @@ void BuildMediaTag(const MediaPlaylist& playlist,
       std::string channel_string =
           std::to_string(playlist.GetNumChannels()) + "/IMSA";
       tag.AddQuotedString("CHANNELS", channel_string);
+    } else if (playlist.GetAC4JocFlag() && playlist.GetAC4JocNums()) {
+      // According to Dolby specs ...
+      std::string channel_string =
+          std::to_string(playlist.GetAC4JocNums()) + "/JOC";
+      tag.AddQuotedString("CHANNELS", channel_string);
     } else {
       // According to HLS spec:
       // https://tools.ietf.org/html/draft-pantos-hls-rfc8216bis 4.4.6.1.

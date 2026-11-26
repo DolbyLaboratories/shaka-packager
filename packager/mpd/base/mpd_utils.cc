@@ -214,6 +214,20 @@ std::string GetAdaptationSetKey(const MediaInfo& media_info,
       key.append(":");
       key.append(
           std::to_string(media_info.video_info().transfer_characteristics()));
+    } else if (GetBaseCodec(media_info) == "ec-3") {
+      key.append(":");
+      key.append(std::to_string(
+          media_info.audio_info().codec_specific_data().channel_mpeg_value()));
+      key.append(":");
+      key.append(std::to_string(
+          media_info.audio_info().codec_specific_data().ec3_joc_complexity()));
+    } else if (GetBaseCodec(media_info) == "ac-4") {
+      key.append(":");
+      key.append(std::to_string(
+          media_info.audio_info().codec_specific_data().channel_mpeg_value()));
+      key.append(":");
+      key.append(std::to_string(
+          media_info.audio_info().codec_specific_data().ac4_ims_flag()));
     }
   }
   key.append(":");
@@ -539,6 +553,13 @@ void AddContentProtectionElements(const MediaInfo& media_info,
 void AddContentProtectionElements(const MediaInfo& media_info,
                                   AdaptationSet* parent) {
   AddContentProtectionElementsHelperTemplated(media_info, parent);
+}
+
+void AssignAC4PreselectionId(Period* period) {
+  uint32_t assigned_id = kDefaultAC4PreselectionId;
+  for (auto& preselection : period->preselection_list()) {
+    preselection.get()->set_id(assigned_id++);
+  }
 }
 
 }  // namespace shaka

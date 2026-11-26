@@ -112,6 +112,8 @@ class SubsampleGenerator {
   std::unique_ptr<VideoSliceHeaderParser> header_parser_;
   // AV1 parser for AV1 streams.
   std::unique_ptr<AV1Parser> av1_parser_;
+  // AC4 parser for AC4 streams.
+  std::unique_ptr<AC4Parser> ac4_parser_;
 };
 
 }  // namespace media

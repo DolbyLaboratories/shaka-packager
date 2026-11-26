@@ -61,8 +61,9 @@ Status PackedAudioSegmenter::Initialize(const StreamInfo& stream_info) {
     if (!adts_converter_->Parse(audio_codec_config_)) {
       return Status(error::MUXER_FAILURE, "Invalid audio codec configuration.");
     }
+  } else if (codec_ == kCodecAC4) {
+    write_ac4_header_ = true;
   }
-
   return Status::OK;
 }
 
@@ -82,6 +83,19 @@ Status PackedAudioSegmenter::AddSample(const MediaSample& sample) {
       return Status(error::MUXER_FAILURE, "Failed to convert to ADTS.");
     segment_buffer_.AppendArray(audio_frame.data(), audio_frame.size());
   } else {
+    if (write_ac4_header_) {
+      size_t frame_size = sample.data_size();
+      ac4_header_[0] = 0xac;
+      ac4_header_[1] = 0x40;
+      ac4_header_[2] = 0xff;
+      ac4_header_[3] = 0xff;
+      ac4_header_[4] = (frame_size >> 16) & 0xFF;
+      ac4_header_[5] = (frame_size >> 8) & 0xFF;
+      ac4_header_[6] = (frame_size)&0xFF;
+
+      const uint8_t* header = reinterpret_cast<uint8_t*>(&ac4_header_);
+      segment_buffer_.AppendArray(header, 7);
+    }
     segment_buffer_.AppendArray(sample.data(), sample.data_size());
   }
   return Status::OK;

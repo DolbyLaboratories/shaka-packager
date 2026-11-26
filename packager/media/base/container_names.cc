@@ -1724,6 +1724,8 @@ MediaContainerName DetermineContainerFromFormatName(
   } else if (normalized_format_name == "ec3" ||
              normalized_format_name == "eac3") {
     return CONTAINER_EAC3;
+  } else if (normalized_format_name == "ac4") {
+    return CONTAINER_AC4;
   } else if (normalized_format_name == "mp3") {
     return CONTAINER_MP3;
   } else if (normalized_format_name == "webm") {

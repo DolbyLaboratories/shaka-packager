@@ -30,6 +30,7 @@ enum MediaContainerName {
   CONTAINER_DV,       // DV (Digital Video)
   CONTAINER_DXA,      // DXA
   CONTAINER_EAC3,     // Enhanced AC-3
+  CONTAINER_AC4,      // Dolby AC-4
   CONTAINER_FLAC,     // FLAC (Free Lossless Audio Codec)
   CONTAINER_FLV,      // FLV (Flash Video)
   CONTAINER_GSM,      // GSM (Global System for Mobile Audio)

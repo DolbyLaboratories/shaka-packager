@@ -62,10 +62,10 @@ std::string AdjustVideoCodec(const std::string& codec) {
   std::string fourcc = codec.substr(0, 4);
   if (fourcc == "avc3")
     adjusted_codec = "avc1" + codec.substr(4);
-  else if (fourcc == "hev1")
-    adjusted_codec = "hvc1" + codec.substr(4);
-  else if (fourcc == "dvhe")
-    adjusted_codec = "dvh1" + codec.substr(4);
+  // else if (fourcc == "hev1")
+  //   adjusted_codec = "hvc1" + codec.substr(4);
+  // else if (fourcc == "dvhe")
+  //   adjusted_codec = "dvh1" + codec.substr(4);
   if (adjusted_codec != codec) {
     VLOG(1) << "Adusting video codec string from " << codec << " to "
             << adjusted_codec;
@@ -595,6 +595,14 @@ bool MediaPlaylist::GetAC4CbiFlag() const {
   return media_info_.audio_info().codec_specific_data().ac4_cbi_flag();
 }
 
+bool MediaPlaylist::GetAC4JocFlag() const {
+  return media_info_.audio_info().codec_specific_data().ac4_joc_flag();
+}
+
+uint32_t MediaPlaylist::GetAC4JocNums() const {
+  return media_info_.audio_info().codec_specific_data().ac4_joc_nums();
+}
+
 bool MediaPlaylist::GetDisplayResolution(uint32_t* width,
                                          uint32_t* height) const {
   DCHECK(width);
@@ -614,8 +622,8 @@ bool MediaPlaylist::GetDisplayResolution(uint32_t* width,
 }
 
 std::string MediaPlaylist::GetVideoRange() const {
-  // Dolby Vision (dvh1 or dvhe) is always HDR.
-  if (codec_.find("dvh") == 0)
+  // Dolby Vision (dvh1, dvhe or dav1) is always HDR.
+  if (codec_.find("dvh") == 0 || codec_.find("dav1") == 0)
     return "PQ";
 
   // HLS specification:

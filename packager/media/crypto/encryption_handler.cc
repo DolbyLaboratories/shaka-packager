@@ -424,8 +424,8 @@ void EncryptionHandler::SetupProtectionPattern(StreamType stream_type,
     crypt_byte_block_ = encryption_params_.crypt_byte_block;
     skip_byte_block_ = encryption_params_.skip_byte_block;
   } else {
-    // Audio stream in pattern encryption scheme does not use pattern; it uses
-    // whole-block full sample encryption instead. Non-pattern encryption does
+    // Audio stream other than AC-4 in pattern encryption scheme does not use pattern;
+    // it uses, whole-block full sample encryption instead. Non-pattern encryption does
     // not have pattern.
     crypt_byte_block_ = 0u;
     skip_byte_block_ = 0u;

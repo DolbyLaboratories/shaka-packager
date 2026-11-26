@@ -85,6 +85,8 @@ Codec FourCCToCodec(FourCC fourcc) {
   switch (fourcc) {
     case FOURCC_av01:
       return kCodecAV1;
+    case FOURCC_dav1:
+      return kCodecAV1DolbyVision;
     case FOURCC_avc1:
     case FOURCC_avc3:
       return kCodecH264;
@@ -455,6 +457,8 @@ bool MP4MediaParser::ParseBox(bool* err) {
 
   if (reader->type() == FOURCC_moov) {
     *err = !ParseMoov(reader.get());
+  } else if (reader->type() == FOURCC_meta) {
+    *err = !ParseMeta(reader.get());
   } else if (reader->type() == FOURCC_moof) {
     moof_head_ = queue_.head();
     *err = !ParseMoof(reader.get());
@@ -470,6 +474,20 @@ bool MP4MediaParser::ParseBox(bool* err) {
 
   queue_.Pop(static_cast<int>(reader->size()));
   return !(*err);
+}
+
+bool MP4MediaParser::ParseMeta(BoxReader* reader) {
+  if (meta_)
+    return true;
+
+  std::unique_ptr<Meta> meta(new Meta);
+  if (!meta->Parse(reader)) {
+    LOG(WARNING) << "Failed to parse 'meta' box. The box will be skipped.";
+    return true;
+  }
+  meta->raw_box.assign(reader->data(), reader->data() + reader->size());
+  meta_ = std::move(meta);
+  return true;
 }
 
 bool MP4MediaParser::ParseMoov(BoxReader* reader) {
@@ -604,7 +622,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           // Stop the process if have errors when parsing AC-4 dac4 box,
           // bitstream version 0 (has beed deprecated) and contains multiple
           // presentations in single AC-4 stream (only used for broadcast).
-          if (!GetAc4CodecInfo(codec_config, &audio_object_type)) {
+          if (!GetAc4CodecInfo(codec_config, &audio_object_type, &num_channels)) {
             LOG(ERROR) << "Failed to parse dac4.";
             return false;
           }
@@ -682,13 +700,16 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
               ? false
               : entry.sinf.info.track_encryption.default_is_protected == 1;
       DVLOG(1) << "is_audio_track_encrypted_: " << is_encrypted;
-      streams.emplace_back(new AudioStreamInfo(
+      auto audio_stream_info = std::make_shared<AudioStreamInfo>(
           track->header.track_id, timescale, duration, codec,
           AudioStreamInfo::GetCodecString(codec, audio_object_type),
           codec_config.data(), codec_config.size(), entry.samplesize,
           num_channels, sampling_frequency, seek_preroll_ns, codec_delay_ns,
           max_bitrate, avg_bitrate, track->media.header.language.code,
-          is_encrypted));
+          is_encrypted);
+      if (codec == kCodecAC4 && meta_ && !meta_->raw_box.empty())
+        audio_stream_info->set_meta_box_data(meta_->raw_box);
+      streams.push_back(std::move(audio_stream_info));
     }
 
     if (samp_descr.type == kVideo) {
@@ -719,7 +740,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       const FourCC actual_format = entry.GetActualFormat();
       const Codec video_codec = FourCCToCodec(actual_format);
       switch (actual_format) {
-        case FOURCC_av01: {
+        case FOURCC_av01:
+        case FOURCC_dav1: {
           AV1CodecConfigurationRecord av1_config;
           if (!av1_config.Parse(codec_configuration_data)) {
             LOG(ERROR) << "Failed to parse av1c.";

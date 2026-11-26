@@ -240,6 +240,16 @@ class MediaPlaylist {
   ///         personalized audio 4.3.
   virtual bool GetAC4CbiFlag() const;
 
+    /// @return true if it's an AC-4 CBI stream, based on ETSI TS 103 190-2
+  ///         Digital Audio Compression (AC-4) Standard; Part 2: Immersive and
+  ///         personalized audio 4.3.
+  virtual bool GetAC4JocFlag() const;
+
+      /// @return true if it's an AC-4 CBI stream, based on ETSI TS 103 190-2
+  ///         Digital Audio Compression (AC-4) Standard; Part 2: Immersive and
+  ///         personalized audio 4.3.
+  virtual uint32_t GetAC4JocNums() const;
+
   /// @return true if |width| and |height| have been set with a valid
   ///         resolution values.
   virtual bool GetDisplayResolution(uint32_t* width, uint32_t* height) const;

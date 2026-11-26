@@ -144,6 +144,7 @@ Status SubsampleGenerator::Initialize(FourCC protection_scheme,
 
   switch (codec_) {
     case kCodecAV1:
+    case kCodecAV1DolbyVision:
       av1_parser_.reset(new AV1Parser);
       break;
     case kCodecVP9:
@@ -236,6 +237,7 @@ Status SubsampleGenerator::GenerateSubsamples(
     case kCodecAC4:
       return GenerateSubsamplesFromAC4Frame(frame, frame_size, subsamples);
     case kCodecAV1:
+    case kCodecAV1DolbyVision:
       return GenerateSubsamplesFromAV1Frame(frame, frame_size, subsamples);
     case kCodecH264:
       FALLTHROUGH_INTENDED;
@@ -322,7 +324,9 @@ Status SubsampleGenerator::GenerateSubsamplesFromAC4Frame(
     toc_size = ac4_frame.GetAc4TocSize();
   }
   // clear_bytes is toc_size rounded up to the nearest multiple of 8.
-  size_t clear_bytes = ((toc_size + 7) / 8) * 8;
+  size_t clear_bytes = (toc_size + 7) / 8;
+  if (frame_size < clear_bytes)
+    return Status(error::ENCRYPTION_FAILURE, "Frame size is smaller than clear bytes.");
   size_t cipher_bytes = frame_size - clear_bytes;
   subsample_organizer.AddSubsample(clear_bytes, cipher_bytes);
   return Status::OK;
